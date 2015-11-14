@@ -1,8 +1,5 @@
-var Macchina = function(options) {
+var Macchina = function(states, options) {
   this.options = options || {};
-};
-
-Macchina.prototype.start = function(states) {
   this.states = states;
   this._currentState = ko.observable();
   if (!this.states.start) {
@@ -19,18 +16,33 @@ Macchina.prototype.setCurrentState = function(state) {
   this._currentState = state;
 };
 
-Macchina.prototype.transition = function(newState, options) {
+Macchina.prototype.transition = function(state, options) {
   options = options || {};
 
   var changeStateFunction = function() {
-    this.setCurrentState(newState);
+    this.setCurrentState(state);
     var stateAfterChange = this.getCurrentState();
-    stateAfterChange.transition();
+    var didTransition = false;
+
+    // async transition
+    var cb = function(nextStateAsync) {
+      if (!didTransition) {
+        didTransition = true;
+        this.transition(nextStateAsync);
+      }
+    }.bind(this);
+
+    // sync transition
+    var nextStateSync = stateAfterChange.transition(cb);
+    if (nextStateSync && !didTransition) {
+      didTransition = true;
+      this.transition(nextStateSync);
+    }
   }.bind(this);
 
   var stateBeforeChange = this.getCurrentState();
   stateBeforeChange && clearTimeout(stateBeforeChange._timeoutID);
-  var timeout = options.skipTimeout ? 0 : stateBeforeChange ? stateBeforeChange.timeout : 0;
+  var timeout = options.immediate ? 0 : (stateBeforeChange ? stateBeforeChange.timeout : 0);
 
   if (timeout === 0) {
     changeStateFunction();
@@ -39,6 +51,6 @@ Macchina.prototype.transition = function(newState, options) {
   }
 };
 
-Macchina.prototype.changeStateWithoutTimeout = function(stateChange) {
-  this.changeState(stateChange, {skipTimeout: true});
+Macchina.prototype.immediateTransition = function(stateChange) {
+  this.changeState(stateChange, {immediate: true});
 };
