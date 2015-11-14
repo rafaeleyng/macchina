@@ -1,7 +1,14 @@
-var Macchina = function(states) {
+var Macchina = function(options) {
+  this.options = options || {};
+};
+
+Macchina.prototype.start = function(states) {
   this.states = states;
   this._currentState = ko.observable();
-  this.changeState(this.states.start);
+  if (!this.states.start) {
+    throw new Error('Must define a `start` state');
+  }
+  this.transition(this.states.start);
 };
 
 Macchina.prototype.getCurrentState = function() {
@@ -12,17 +19,26 @@ Macchina.prototype.setCurrentState = function(state) {
   this._currentState = state;
 };
 
-Macchina.prototype.logCurrentState = function() {
-  console.log(this.getCurrentState().state);
-};
-
-Macchina.prototype.changeState = function(newState, withoutTimeout) {
-  var self = this;
+Macchina.prototype.transition = function(newState, options) {
+  options = options || {};
 
   var changeStateFunction = function() {
-    self.setCurrentState(newState);
-    self.logCurrentState();
-  };
+    this.setCurrentState(newState);
+    var stateAfterChange = this.getCurrentState();
+    stateAfterChange.transition();
+  }.bind(this);
 
-  changeStateFunction();
+  var stateBeforeChange = this.getCurrentState();
+  stateBeforeChange && clearTimeout(stateBeforeChange._timeoutID);
+  var timeout = options.skipTimeout ? 0 : stateBeforeChange ? stateBeforeChange.timeout : 0;
+
+  if (timeout === 0) {
+    changeStateFunction();
+  } else {
+    stateBeforeChange._timeoutID = setTimeout(changeStateFunction, timeout);
+  }
+};
+
+Macchina.prototype.changeStateWithoutTimeout = function(stateChange) {
+  this.changeState(stateChange, {skipTimeout: true});
 };
