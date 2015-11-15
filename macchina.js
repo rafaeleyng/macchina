@@ -21,6 +21,9 @@ Macchina.prototype.transition = function(state, options) {
 
   var changeStateFunction = function() {
     this.setCurrentState(state);
+    if (this.options.debug) {
+      console.log('currentState:', this.getCurrentState().name || this.getCurrentState());
+    }
     var stateAfterChange = this.getCurrentState();
     var didTransition = false;
 
