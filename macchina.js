@@ -32,11 +32,13 @@ Macchina.prototype.transition = function(state, options) {
       }
     }.bind(this);
 
-    // sync transition
-    var nextStateSync = stateAfterChange.transition(cb);
-    if (nextStateSync && !didTransition) {
-      didTransition = true;
-      this.transition(nextStateSync);
+    if (stateAfterChange.transition) {
+      // sync transition
+      var nextStateSync = stateAfterChange.transition(cb);
+      if (nextStateSync && !didTransition) {
+        didTransition = true;
+        this.transition(nextStateSync);
+      }
     }
   }.bind(this);
 
