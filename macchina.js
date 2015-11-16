@@ -1,12 +1,9 @@
 var Macchina = function(states, options) {
-  this.options = options || {};
-  this.properties = {};
-  this.states = states;
+  this._options = options || {};
+  this._states = states;
+  this._initProperties();
   this._initCurrentState();
-  var startState = this._findState('start');
-  if (!startState) {
-    throw new Error('Must define a `start` state');
-  }
+  this._initCurrentState();
   this.transition('start');
 };
 
@@ -14,71 +11,94 @@ var Macchina = function(states, options) {
   private
 */
 Macchina.prototype._initCurrentState = function() {
-  this._currentState = undefined;
+  this._state = undefined;
 };
 
 Macchina.prototype._getCurrentState = function() {
-  return this._currentState;
+  return this._state;
 };
 
 Macchina.prototype._setCurrentState = function(state) {
-  this._currentState = state;
+  this._state = state;
 };
 
 Macchina.prototype._findState = function(name) {
-  return this.states.filter(function(item) {
+  var state = this._states.filter(function(item) {
     return item.name === name;
   })[0];
+  if (state === undefined) {
+    throw new Error('Undefined state: ' + name);
+  }
+  return state;
 };
 
-Macchina.prototype._setProperties = function() {
+Macchina.prototype._propName = function(prefix, suffix) {
+  return prefix + suffix.charAt(0).toUpperCase() + suffix.slice(1);;
+};
+
+Macchina.prototype._initProperties = function() {
+  this._properties = {};
+  this._states.forEach(function(state) {
+    for (var i in state.properties) {
+      for (var j in state.properties[i]) {
+        this._initProperty(this._propName(i, j));
+      }
+    }
+  }.bind(this));
+};
+
+Macchina.prototype._initProperty = function(name) {
+  this._properties[name] = undefined;
+};
+
+Macchina.prototype._setProperty = function(name, value) {
+  this._properties[name] = value;
+};
+
+Macchina.prototype._getProperty = function(name) {
+  return this._properties[name];
+};
+
+Macchina.prototype._cleanStateProperties = function() {
+  for (var i in this._properties) {
+    this._setProperty(i, undefined);
+  }
+};
+
+Macchina.prototype._setStateProperties = function() {
+  this._cleanStateProperties();
+
   var state = this._getCurrentState();
   for (var i in state.properties) {
-    // transform single string to array
-    (typeof state.properties[i] === 'string') && (state.properties[i] = [state.properties[i]]);
-    console.log(state.name, i, state.properties[i]);
-    // this._setProperty()
+    for (var j in state.properties[i]) {
+      var propName = this._propName(i, j);
+      var propValue = state.properties[i][j];
+      this._setProperty(propName, propValue);
+    }
   }
-
-  // for (var i in elements) {
-  //   var element = elements[i];
-  //   var value = true;
-  //   if(typeof element !== 'string') return;
-  //   if ($.inArray(element, elementsTrue) === -1) {
-  //     value = false;
-  //   }
-  //
-  //   var propName = prefix + element.charAt(0).toUpperCase() + element.slice(1);
-  //   if (this[propName] === undefined) {
-  //     this[propName] = ko.observable();
-  //   }
-  //   this[propName](value);
-  // }
-
-};
-
-Macchina.prototype._setProperty = function(property, value) {
-  this.properties[property] = value;
 };
 
 /*
   public
 */
-Macchina.prototype.getCurrentState = function() {
+Macchina.prototype.state = function() {
   return this._getCurrentState().name;
 };
 
+Macchina.prototype.properties = function() {
+  return this._properties;
+};
+
 Macchina.prototype.transition = function(stateName, options) {
-  console.log('transition', stateName);
   options = options || {};
 
   var changeStateFunction = function() {
     this._setCurrentState(this._findState(stateName));
     var stateAfterChange = this._getCurrentState();
-    if (this.options.debug) {
+    if (this._options.debug) {
       console.log('currentState:', stateAfterChange.name);
     }
-    this._setProperties();
+    this._setStateProperties();
 
     var didTransition = false;
     // async transition
@@ -111,5 +131,7 @@ Macchina.prototype.transition = function(stateName, options) {
 };
 
 Macchina.prototype.immediateTransition = function(stateChange) {
-  this.changeState(stateChange, {immediate: true});
+  this.transition(stateChange, {immediate: true});
 };
+
+Macchina.prototype.immediate = Macchina.prototype.immediateTransition;
