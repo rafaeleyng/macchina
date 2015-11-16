@@ -36,17 +36,6 @@ Macchina.prototype._propName = function(prefix, suffix) {
   return prefix + suffix.charAt(0).toUpperCase() + suffix.slice(1);;
 };
 
-Macchina.prototype._initProperties = function() {
-  this._properties = {};
-  this._states.forEach(function(state) {
-    for (var i in state.properties) {
-      for (var j in state.properties[i]) {
-        this._initProperty(this._propName(i, j));
-      }
-    }
-  }.bind(this));
-};
-
 Macchina.prototype._initProperty = function(name) {
   this._properties[name] = undefined;
 };
@@ -65,15 +54,39 @@ Macchina.prototype._cleanStateProperties = function() {
   }
 };
 
+Macchina.prototype._createPropertiesObject = function(properties) {
+  var temp = {};
+  if (typeof properties === 'string') {
+    temp[properties] = true;
+    return temp;
+  } else if (Array.isArray(properties)) {
+    properties.forEach(function(property) {
+      temp[property] = true;
+    });
+    return temp;
+  }
+  return properties;
+};
+
+Macchina.prototype._initProperties = function() {
+  this._properties = {};
+  this._states.forEach(function(state) {
+    for (var i in state.properties) {
+      var stateProperties = this._createPropertiesObject(state.properties[i]);
+      for (var j in stateProperties) {
+        this._initProperty(this._propName(i, j));
+      }
+    }
+  }.bind(this));
+};
+
 Macchina.prototype._setStateProperties = function() {
   this._cleanStateProperties();
-
   var state = this._getCurrentState();
   for (var i in state.properties) {
-    for (var j in state.properties[i]) {
-      var propName = this._propName(i, j);
-      var propValue = state.properties[i][j];
-      this._setProperty(propName, propValue);
+    var stateProperties = this._createPropertiesObject(state.properties[i]);
+    for (var j in stateProperties) {
+      this._setProperty(this._propName(i, j), stateProperties[j]);
     }
   }
 };
