@@ -1,5 +1,6 @@
 var Macchina = function(states, options) {
   this.options = options || {};
+  this.properties = {};
   this.states = states;
   this._currentState = ko.observable();
   if (!this.states.start) {
@@ -21,12 +22,13 @@ Macchina.prototype.transition = function(state, options) {
 
   var changeStateFunction = function() {
     this.setCurrentState(state);
-    if (this.options.debug) {
-      console.log('currentState:', this.getCurrentState().name || this.getCurrentState());
-    }
     var stateAfterChange = this.getCurrentState();
-    var didTransition = false;
+    if (this.options.debug) {
+      console.log('currentState:', stateAfterChange.name || stateAfterChange);
+    }
+    this.setProperties();
 
+    var didTransition = false;
     // async transition
     var cb = function(nextStateAsync) {
       if (!didTransition) {
@@ -58,4 +60,34 @@ Macchina.prototype.transition = function(state, options) {
 
 Macchina.prototype.immediateTransition = function(stateChange) {
   this.changeState(stateChange, {immediate: true});
+};
+
+Macchina.prototype.setProperties = function() {
+  var state = this.getCurrentState();
+  for (var i in state.properties) {
+    // transform single string to array
+    (typeof state.properties[i] === 'string') && (state.properties[i] = [state.properties[i]]);
+    console.log(state.name, i, state.properties[i]);
+    // this.setProperty()
+  }
+
+  // for (var i in elements) {
+  //   var element = elements[i];
+  //   var value = true;
+  //   if(typeof element !== 'string') return;
+  //   if ($.inArray(element, elementsTrue) === -1) {
+  //     value = false;
+  //   }
+  //
+  //   var propName = prefix + element.charAt(0).toUpperCase() + element.slice(1);
+  //   if (this[propName] === undefined) {
+  //     this[propName] = ko.observable();
+  //   }
+  //   this[propName](value);
+  // }
+
+};
+
+Macchina.prototype.setProperty = function(property, value) {
+  this.properties[property] = value;
 };
