@@ -3,23 +3,22 @@ var Macchina = function(states, options) {
   this._states = states;
   this._initProperties();
   this._initCurrentState();
-  this._initCurrentState();
   this.transition('start');
 };
 
 /*
-  private
+  states
 */
 Macchina.prototype._initCurrentState = function() {
   this._state = undefined;
 };
 
-Macchina.prototype._getCurrentState = function() {
-  return this._state;
-};
-
 Macchina.prototype._setCurrentState = function(state) {
   this._state = state;
+};
+
+Macchina.prototype._getCurrentState = function() {
+  return this._state;
 };
 
 Macchina.prototype._findState = function(name) {
@@ -32,6 +31,9 @@ Macchina.prototype._findState = function(name) {
   return state;
 };
 
+/*
+  property
+*/
 Macchina.prototype._propName = function(prefix, suffix) {
   return prefix + suffix.charAt(0).toUpperCase() + suffix.slice(1);;
 };
@@ -48,12 +50,9 @@ Macchina.prototype._getProperty = function(name) {
   return this._properties[name];
 };
 
-Macchina.prototype._cleanStateProperties = function() {
-  for (var i in this._properties) {
-    this._setProperty(i, undefined);
-  }
-};
-
+/*
+  state properties
+*/
 Macchina.prototype._createPropertiesObject = function(properties) {
   var temp = {};
   if (typeof properties === 'string') {
@@ -91,8 +90,14 @@ Macchina.prototype._setStateProperties = function() {
   }
 };
 
+Macchina.prototype._cleanStateProperties = function() {
+  for (var i in this._properties) {
+    this._setProperty(i, undefined);
+  }
+};
+
 /*
-  public
+  public API
 */
 Macchina.prototype.state = function() {
   return this._getCurrentState().name;
