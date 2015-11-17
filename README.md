@@ -1,3 +1,6 @@
-MacchinaJS
+# This is work in progress
 
-Build interactive interfaces as a Finite State Machine (FSM), handling state declaratively.
+Macchina
+--------
+
+Express your UI flow as a Finite State Machine (FSM), handling view state declaratively.
