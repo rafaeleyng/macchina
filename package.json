@@ -1,0 +1,24 @@
+{
+  "name": "macchina",
+  "version": "0.1.0",
+  "description": "Express your UI flow as a Finite State Machine (FSM), handling view state declaratively.",
+  "main": "macchina.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rafaeleyng/macchina.git"
+  },
+  "keywords": [
+    "fsm",
+    "state-machine",
+    "interface"
+  ],
+  "author": "Rafael Eyng <rafaeleyng@gmail.com> (https://github.com/rafaeleyng)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rafaeleyng/macchina/issues"
+  },
+  "homepage": "https://github.com/rafaeleyng/macchina#readme"
+}
