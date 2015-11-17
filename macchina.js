@@ -134,16 +134,16 @@
 
       var didTransition = false;
       // async transition
-      var cb = function(nextStateAsync) {
+      var asyncTransition = function(nextStateAsync) {
         if (!didTransition) {
           didTransition = true;
           this.transition(nextStateAsync);
         }
       }.bind(this);
 
-      if (stateAfterChange.transition) {
+      if (stateAfterChange.callback) {
         // sync transition
-        var nextStateSync = stateAfterChange.transition(cb);
+        var nextStateSync = stateAfterChange.callback(asyncTransition);
         if (nextStateSync && !didTransition) {
           didTransition = true;
           this.transition(nextStateSync);
