@@ -141,6 +141,13 @@
         }
       }.bind(this);
 
+      if (typeof stateAfterChange.callback === 'string') {
+        var temp = stateAfterChange.callback;
+        stateAfterChange.callback = function() {
+          return temp;
+        }
+      }
+
       if (stateAfterChange.callback) {
         // sync transition
         var nextStateSync = stateAfterChange.callback(asyncTransition);
