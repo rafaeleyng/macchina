@@ -21,11 +21,11 @@ For instance, you can organize a piece of UI, like a form that may have some dif
 
 1. Define your UI states in a piece of paper or in your head. You have to define the possible states of your UI (and give a name for each state) and the transitions between them:
 
-![macchina fsm demo](https://cloud.githubusercontent.com/assets/4842605/12216467/da7c099c-b6c9-11e5-938c-69ca366b354d.png)
+  ![macchina fsm demo](https://cloud.githubusercontent.com/assets/4842605/12216467/da7c099c-b6c9-11e5-938c-69ca366b354d.png)
 
 1. Transpose your UI states to Javascript code. Use `properties` to describe how you want things look/behave (note that you have to define a state called `'start'`, that will be the first state called):
 
-```javascript
+  ```javascript
 var states = [
   {
     name: 'start',
@@ -59,13 +59,13 @@ var states = [
 
 1. Initialize your Macchina instance, passing the states:
 
-```javascript
+  ```javascript
 var macchina = new Macchina(states);
 ```
 
 1. Bind Macchina state transitions to appopriate UI actions:
 
-```javascript
+  ```javascript
 saveButton.addEventListener('click', macchina.transition('save'));
 ```
 
@@ -192,25 +192,27 @@ There are several ways to transition between states. A transition can happen aut
 
 1. `return stateName` in the state `callback` function
 
-This is the way to go **if all you want to do in a state is to perform some synchronous task** and then transition to another state.
+  This is the way to go **if all you want to do in a state is to perform some synchronous task** and then transition to another state.
 
 1. Setting `callback` directly to a state name
 
-This is usefull basically for better organizing your code. All the state will do is to call the next.
+  This is usefull basically for better organizing your code. All the state will do is to call the next.
 
 1. `.transition(stateName)`
 
-This is the way to go **to handle user input**, like going to next state when the user clicks the "Next" button. But note: you can call this method only if your current state won't perform any automatic transition (caused by the `timeout` property). See `.immediateTransition`.
+  This is the way to go **to handle user input**, like going to next state when the user clicks the "Next" button. But note: you can call this method only if your current state won't perform any automatic transition (caused by the `timeout` property). See `.immediateTransition`.
 
 1. `asyncTransition(stateName)` callback
 
-This is the way to go **to handle async calls**, like a state that blocks some inputs while waits for server response. Inside a state `callback`, you can receive a `asyncTransition` and call it passing the next state name.
+  This is the way to go **to handle async calls**, like a state that blocks some inputs while waits for server response. Inside a state `callback`, you can receive a `asyncTransition` and call it passing the next state name.
 
 1. `.immediateTransition(stateName)`
 
-This is the way to go **to cancel an automatic transition** (via the `timeout` property) **and make a transition to happen immediately**. For instance,  want to show a message for 5 seconds and dismiss it. You can create a state for that with  `timeout: 5000` and `callback: 'nextStateName'`. But you can provide a button "Dismiss now", and call `immediateTransition('nextStateName')` when that button is clicked.
+  This is the way to go **to cancel an automatic transition** (via the `timeout` property) **and make a transition to happen immediately**. For instance,  want to show a message for 5 seconds and dismiss it. You can create a state for that with  `timeout: 5000` and `callback: 'nextStateName'`. But you can provide a button "Dismiss now", and call `immediateTransition('nextStateName')` when that button is clicked.
+
 
 ## Adapters
 
 [macchina-knockout](https://github.com/rafaeleyng/macchina-knockout)
+
 I would appreciate if somebody could help by writting adapters to other libs/frameworks.
