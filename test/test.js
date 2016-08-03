@@ -26,17 +26,7 @@ test('initial state is "start"', t => {
   t.is(macchina.state(), 'start')
 })
 
-test.cb('transition to other state changes the state accordingly', t => {
-  macchina.transition('second')
+test('transition to other state changes the state accordingly', t => {
+  macchina.immediateTransition('second')
   t.is(macchina.state(), 'second')
-})
-
-test.cb('transition to other state changes the state accordingly TEMP', t => {
-  t.plan(1)
-  macchina.transition('second')
-
-  setTimeout(() => {
-    t.is(macchina.state(), 'second')
-    t.end()
-  })
 })

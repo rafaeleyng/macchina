@@ -40,7 +40,8 @@
     "semicolon": false,
     "space": true,
     "rules": {
-      "comma-dangle": ["error", "always-multiline"]
+      "comma-dangle": ["error", "always-multiline"],
+      "guard-for-in": 0
     }
   },
   "ava": {

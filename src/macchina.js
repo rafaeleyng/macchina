@@ -108,9 +108,7 @@ export default class Macchina {
     return this._properties
   }
 
-  transition(stateName, options) {
-    options = options || {}
-
+  transition(stateName, options = {}) {
     const changeStateFunction = () => {
       this._setCurrentState(this._findState(stateName))
       const stateAfterChange = this._getCurrentState()
