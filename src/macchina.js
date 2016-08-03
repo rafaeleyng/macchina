@@ -1,33 +1,37 @@
 export default class Macchina {
-  constructor(states, options) {
-    this._options = options || {}
-    this._states = states
-    this._initProperties()
-    this._initCurrentState()
-    this.transition('start')
+  constructor(states, options = {}) {
+    // init
+    this.options = options
+    this.states = states
+    this.initProperties()
+    this.initCurrentState()
 
+    // alias
     this.immediate = this.immediateTransition
+
+    // start the macchina
+    this.transition('start')
   }
 
   /*
     states
   */
-  _initCurrentState() {
-    this._state = undefined
+  initCurrentState() {
+    this.currentState = undefined
   }
 
-  _setCurrentState(state) {
-    this._state = state
+  setCurrentState(state) {
+    this.currentState = state
   }
 
-  _getCurrentState() {
-    return this._state
+  getCurrentState() {
+    return this.currentState
   }
 
-  _findState(name) {
-    const state = this._states.find(item => item.name === name)
+  findState(name) {
+    const state = this.states.find(item => item.name === name)
     if (state === undefined) {
-      throw new Error(`Undefined state: ${name}`)
+      throw new Error(`[macchina] undefined state: ${name}`)
     }
     return state
   }
@@ -35,26 +39,22 @@ export default class Macchina {
   /*
     property
   */
-  _propName(prefix, suffix) {
+  propName(prefix, suffix) {
     return prefix + suffix.charAt(0).toUpperCase() + suffix.slice(1)
   }
 
-  _initProperty(name) {
-    this._properties[name] = undefined
+  setProperty(name, value) {
+    this.properties[name] = value
   }
 
-  _setProperty(name, value) {
-    this._properties[name] = value
-  }
-
-  _getProperty(name) {
-    return this._properties[name]
+  getProperty(name) {
+    return this.properties[name]
   }
 
   /*
     state properties
   */
-  _createPropertiesObject(properties) {
+  createPropertiesObject(properties) {
     const temp = {}
     if (typeof properties === 'string') {
       temp[properties] = true
@@ -68,54 +68,44 @@ export default class Macchina {
     return properties
   }
 
-  _initProperties() {
-    this._properties = {}
-    this._states.forEach(state => {
+  initProperties() {
+    this.properties = {}
+    this.states.forEach(state => {
       for (const i in state.properties) {
-        const stateProperties = this._createPropertiesObject(state.properties[i])
-        for (const j in stateProperties) {
-          this._initProperty(this._propName(i, j))
-        }
+        this.setProperty(i)
       }
     })
   }
 
-  _setStateProperties() {
-    this._cleanStateProperties()
-    const state = this._getCurrentState()
+  setCurrentStateProperties() {
+    // clean previous values
+    this.initProperties()
+    // set values for current state
+    const state = this.getCurrentState()
     for (const i in state.properties) {
-      const stateProperties = this._createPropertiesObject(state.properties[i])
-      for (const j in stateProperties) {
-        this._setProperty(this._propName(i, j), stateProperties[j])
-      }
-    }
-  }
-
-  _cleanStateProperties() {
-    for (const i in this._properties) {
-      this._setProperty(i, undefined)
+      this.setProperty(i, state.properties[i])
     }
   }
 
   /*
     public API
   */
-  state() {
-    return this._getCurrentState().name
+  getCurrentStateName() {
+    return this.getCurrentState().name
   }
 
-  properties() {
-    return this._properties
+  getProperties() {
+    return this.properties
   }
 
-  transition(stateName, options = {}) {
+  transition(stateName, transitionOptions = {}) {
     const changeStateFunction = () => {
-      this._setCurrentState(this._findState(stateName))
-      const stateAfterChange = this._getCurrentState()
-      if (this._options.debug) {
+      this.setCurrentState(this.findState(stateName))
+      const stateAfterChange = this.getCurrentState()
+      if (this.options.debug) {
         console.log('currentState:', stateAfterChange.name)
       }
-      this._setStateProperties()
+      this.setCurrentStateProperties()
 
       let didTransition = false
       // async transition
@@ -141,22 +131,22 @@ export default class Macchina {
       }
     }
 
-    const stateBeforeChange = this._getCurrentState()
+    const stateBeforeChange = this.getCurrentState()
     if (stateBeforeChange) {
-      clearTimeout(stateBeforeChange._timeoutID)
+      clearTimeout(stateBeforeChange.timeoutID)
     }
 
     let timeout
-    if (options.immediate) {
+    if (transitionOptions.immediate) {
       timeout = 0
     } else {
-      timeout = stateBeforeChange ? stateBeforeChange.timeout : 0
+      timeout = stateBeforeChange ? (stateBeforeChange.timeout ? stateBeforeChange.timeout : 0) : 0
     }
 
     if (timeout === 0) {
       changeStateFunction()
     } else {
-      stateBeforeChange._timeoutID = setTimeout(changeStateFunction, timeout)
+      stateBeforeChange.timeoutID = setTimeout(changeStateFunction, timeout)
     }
   }
 

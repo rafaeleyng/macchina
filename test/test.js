@@ -1,7 +1,50 @@
 import test from 'ava'
 import Macchina from '../src/macchina.js'
 
-const states = [
+let macchina
+
+const regularModeStates = [
+  {
+    name: 'start',
+    properties: {
+      showSome: true,
+      textTitle: 'Start title',
+    },
+  },
+  {
+    name: 'second',
+    properties: {
+      showSome: true,
+      showOther: true,
+      showAnother: true,
+      textSubtitle: 'Second subtitle',
+    },
+  },
+  {
+    name: 'third',
+    properties: {
+      showOther: true,
+      textTitle: 'Third title',
+      textSubtitle: 'Third subtitle',
+    },
+  },
+  {
+    name: 'fourth',
+    properties: {
+      showSome: true,
+      textComment: 'no title or subtitle on fourth',
+    },
+  },
+  {
+    name: 'fifth',
+    properties: {
+      showOther: true,
+      showAnother: true,
+    },
+  },
+]
+
+const concatModeStates = [
   {
     name: 'start',
     properties: {
@@ -49,83 +92,104 @@ const states = [
   },
 ]
 
-let macchina
-
 test.beforeEach(() => {
-  macchina = new Macchina(states)
+  macchina = new Macchina(regularModeStates)
 })
 
 /*
   state changes
 */
 test('initial state is "start"', t => {
-  t.is(macchina.state(), 'start')
+  t.is(macchina.getCurrentStateName(), 'start')
+})
+
+test('transition changes state correctly when there is no timeout in state', t => {
+  macchina.transition('second')
+  t.is(macchina.getCurrentStateName(), 'second')
 })
 
 test('immediateTransition changes state correctly', t => {
   macchina.immediateTransition('second')
-  t.is(macchina.state(), 'second')
+  t.is(macchina.getCurrentStateName(), 'second')
 })
 
 /*
-  properties
+  properties - regular mode
 */
-test('boolean properties are set correctly in concat mode', t => {
-  t.is(macchina.properties().showSome, true)
-  t.is(macchina.properties().showOther, undefined)
-  t.is(macchina.properties().showAnother, undefined)
+const assertBooleanProperties = (t, macchina) => {
+  t.is(macchina.getProperties().showSome, true)
+  t.is(macchina.getProperties().showOther, undefined)
+  t.is(macchina.getProperties().showAnother, undefined)
 
   macchina.immediateTransition('second')
 
-  t.is(macchina.properties().showSome, true)
-  t.is(macchina.properties().showOther, true)
-  t.is(macchina.properties().showAnother, true)
+  t.is(macchina.getProperties().showSome, true)
+  t.is(macchina.getProperties().showOther, true)
+  t.is(macchina.getProperties().showAnother, true)
 
   macchina.immediateTransition('third')
 
-  t.is(macchina.properties().showSome, undefined)
-  t.is(macchina.properties().showOther, true)
-  t.is(macchina.properties().showAnother, undefined)
+  t.is(macchina.getProperties().showSome, undefined)
+  t.is(macchina.getProperties().showOther, true)
+  t.is(macchina.getProperties().showAnother, undefined)
 
   macchina.immediateTransition('fourth')
 
-  t.is(macchina.properties().showSome, true)
-  t.is(macchina.properties().showOther, undefined)
-  t.is(macchina.properties().showAnother, undefined)
+  t.is(macchina.getProperties().showSome, true)
+  t.is(macchina.getProperties().showOther, undefined)
+  t.is(macchina.getProperties().showAnother, undefined)
 
   macchina.immediateTransition('fifth')
 
-  t.is(macchina.properties().showSome, undefined)
-  t.is(macchina.properties().showOther, true)
-  t.is(macchina.properties().showAnother, true)
-})
+  t.is(macchina.getProperties().showSome, undefined)
+  t.is(macchina.getProperties().showOther, true)
+  t.is(macchina.getProperties().showAnother, true)
+}
 
-test('regular properties are set correctly in concat mode', t => {
-  t.is(macchina.properties().textTitle, 'Start title')
-  t.is(macchina.properties().textSubtitle, undefined)
-  t.is(macchina.properties().textComment, undefined)
+const assertRegularProperties = (t, macchina) => {
+  t.is(macchina.getProperties().textTitle, 'Start title')
+  t.is(macchina.getProperties().textSubtitle, undefined)
+  t.is(macchina.getProperties().textComment, undefined)
 
   macchina.immediateTransition('second')
 
-  t.is(macchina.properties().textTitle, undefined)
-  t.is(macchina.properties().textSubtitle, 'Second subtitle')
-  t.is(macchina.properties().textComment, undefined)
+  t.is(macchina.getProperties().textTitle, undefined)
+  t.is(macchina.getProperties().textSubtitle, 'Second subtitle')
+  t.is(macchina.getProperties().textComment, undefined)
 
   macchina.immediateTransition('third')
 
-  t.is(macchina.properties().textTitle, 'Third title')
-  t.is(macchina.properties().textSubtitle, 'Third subtitle')
-  t.is(macchina.properties().textComment, undefined)
+  t.is(macchina.getProperties().textTitle, 'Third title')
+  t.is(macchina.getProperties().textSubtitle, 'Third subtitle')
+  t.is(macchina.getProperties().textComment, undefined)
 
   macchina.immediateTransition('fourth')
 
-  t.is(macchina.properties().textTitle, undefined)
-  t.is(macchina.properties().textSubtitle, undefined)
-  t.is(macchina.properties().textComment, 'no title or subtitle on fourth')
+  t.is(macchina.getProperties().textTitle, undefined)
+  t.is(macchina.getProperties().textSubtitle, undefined)
+  t.is(macchina.getProperties().textComment, 'no title or subtitle on fourth')
 
   macchina.immediateTransition('fifth')
 
-  t.is(macchina.properties().textTitle, undefined)
-  t.is(macchina.properties().textSubtitle, undefined)
-  t.is(macchina.properties().textComment, undefined)
+  t.is(macchina.getProperties().textTitle, undefined)
+  t.is(macchina.getProperties().textSubtitle, undefined)
+  t.is(macchina.getProperties().textComment, undefined)
+}
+
+test('boolean properties are set correctly in regular mode', t => {
+  assertBooleanProperties(t, macchina)
 })
+
+test('regular properties are set correctly in regular mode', t => {
+  assertRegularProperties(t, macchina)
+})
+
+// test('boolean properties are set correctly in concat mode', t => {
+//   macchina = new Macchina(concatModeStates)
+//   assertBooleanProperties(t, macchina)
+// })
+//
+// test('regular properties are set correctly in concat mode', t => {
+//   macchina = new Macchina(concatModeStates)
+//   assertRegularProperties(t, macchina)
+// })
