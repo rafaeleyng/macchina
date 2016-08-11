@@ -29,7 +29,7 @@ export default class Macchina {
   }
 
   findState(name) {
-    const state = this.states.find(item => item.name === name)
+    const state = this.states.filter(item => item.name === name)[0]
     if (state === undefined) {
       throw new Error(`[macchina] undefined state: ${name}`)
     }
@@ -132,15 +132,18 @@ export default class Macchina {
     }
 
     const stateBeforeChange = this.getCurrentState()
-    if (stateBeforeChange) {
+    const isInitialState = stateBeforeChange === undefined
+    if (!isInitialState) {
       clearTimeout(stateBeforeChange.timeoutID)
     }
 
     let timeout
     if (transitionOptions.immediate) {
       timeout = 0
+    } else if (isInitialState) {
+      timeout = 0
     } else {
-      timeout = stateBeforeChange ? (stateBeforeChange.timeout ? stateBeforeChange.timeout : 0) : 0
+      timeout = stateBeforeChange.timeout ? stateBeforeChange.timeout : 0
     }
 
     if (timeout === 0) {
