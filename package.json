@@ -1,6 +1,6 @@
 {
   "name": "macchina",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Finite States Machine to track properties that change over time",
   "main": "./lib/macchina.js",
   "scripts": {
