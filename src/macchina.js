@@ -6,9 +6,6 @@ export default class Macchina {
     this.initProperties()
     this.initCurrentState()
 
-    // alias
-    this.immediate = this.immediateTransition
-
     // start the macchina
     this.transition('start')
   }
@@ -117,8 +114,8 @@ export default class Macchina {
       }
 
       if (typeof stateAfterChange.callback === 'string') {
-        const temp = stateAfterChange.callback
-        stateAfterChange.callback = () => temp
+        const nextStateName = stateAfterChange.callback
+        stateAfterChange.callback = () => nextStateName
       }
 
       if (stateAfterChange.callback) {
@@ -134,7 +131,7 @@ export default class Macchina {
     const stateBeforeChange = this.getCurrentState()
     const isInitialState = stateBeforeChange === undefined
     if (!isInitialState) {
-      clearTimeout(stateBeforeChange.timeoutID)
+      clearTimeout(stateBeforeChange.__timeoutID)
     }
 
     let timeout
@@ -149,7 +146,7 @@ export default class Macchina {
     if (timeout === 0) {
       changeStateFunction()
     } else {
-      stateBeforeChange.timeoutID = setTimeout(changeStateFunction, timeout)
+      stateBeforeChange.__timeoutID = setTimeout(changeStateFunction, timeout)
     }
   }
 
