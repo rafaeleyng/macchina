@@ -1,7 +1,5 @@
-import test from 'ava'
+import assert from 'assert'
 import Macchina from '../src/macchina.js'
-
-let macchina
 
 const regularModeStates = [
   {
@@ -44,94 +42,75 @@ const regularModeStates = [
   },
 ]
 
-test.beforeEach(() => {
-  macchina = new Macchina(regularModeStates)
-})
+describe('macchina', () => {
+  let macchina
 
-/*
-  state changes
-*/
-test('initial state is "start"', t => {
-  t.is(macchina.getCurrentStateName(), 'start')
-})
+  beforeEach(() => {
+    macchina = new Macchina(regularModeStates)
+  })
 
-test('transition changes state correctly when there is no timeout in state', t => {
-  macchina.transition('second')
-  t.is(macchina.getCurrentStateName(), 'second')
-})
+  describe('states', () => {
+    it('initial state is "start"', () => {
+      assert.equal(macchina.getCurrentStateName(), 'start')
+    })
+  })
 
-test('immediateTransition changes state correctly', t => {
-  macchina.immediateTransition('second')
-  t.is(macchina.getCurrentStateName(), 'second')
-})
+  describe('transitions', () => {
+    it('transition changes state correctly when there is no timeout in state', () => {
+      macchina.transition('second')
+      assert.equal(macchina.getCurrentStateName(), 'second')
+    })
 
-/*
-  properties - regular mode
-*/
-const assertBooleanProperties = (t, macchina) => {
-  t.is(macchina.getProperties().showSome, true)
-  t.is(macchina.getProperties().showOther, undefined)
-  t.is(macchina.getProperties().showAnother, undefined)
+    it('immediateTransition changes state correctly', () => {
+      macchina.immediateTransition('second')
+      assert.equal(macchina.getCurrentStateName(), 'second')
+    })
+  })
 
-  macchina.immediateTransition('second')
+  describe('properties', () => {
+    it('should set properties correctly', () => {
+      assert.strictEqual(macchina.getProperties().showSome, true)
+      assert.strictEqual(macchina.getProperties().showOther, undefined)
+      assert.strictEqual(macchina.getProperties().showAnother, undefined)
+      assert.strictEqual(macchina.getProperties().textTitle, 'Start title')
+      assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
+      assert.strictEqual(macchina.getProperties().textComment, undefined)
 
-  t.is(macchina.getProperties().showSome, true)
-  t.is(macchina.getProperties().showOther, true)
-  t.is(macchina.getProperties().showAnother, true)
+      macchina.immediateTransition('second')
 
-  macchina.immediateTransition('third')
+      assert.strictEqual(macchina.getProperties().showSome, true)
+      assert.strictEqual(macchina.getProperties().showOther, true)
+      assert.strictEqual(macchina.getProperties().showAnother, true)
+      assert.strictEqual(macchina.getProperties().textTitle, undefined)
+      assert.strictEqual(macchina.getProperties().textSubtitle, 'Second subtitle')
+      assert.strictEqual(macchina.getProperties().textComment, undefined)
 
-  t.is(macchina.getProperties().showSome, undefined)
-  t.is(macchina.getProperties().showOther, true)
-  t.is(macchina.getProperties().showAnother, undefined)
+      macchina.immediateTransition('third')
 
-  macchina.immediateTransition('fourth')
+      assert.strictEqual(macchina.getProperties().showSome, undefined)
+      assert.strictEqual(macchina.getProperties().showOther, true)
+      assert.strictEqual(macchina.getProperties().showAnother, undefined)
+      assert.strictEqual(macchina.getProperties().textTitle, 'Third title')
+      assert.strictEqual(macchina.getProperties().textSubtitle, 'Third subtitle')
+      assert.strictEqual(macchina.getProperties().textComment, undefined)
 
-  t.is(macchina.getProperties().showSome, true)
-  t.is(macchina.getProperties().showOther, undefined)
-  t.is(macchina.getProperties().showAnother, undefined)
+      macchina.immediateTransition('fourth')
 
-  macchina.immediateTransition('fifth')
+      assert.strictEqual(macchina.getProperties().showSome, true)
+      assert.strictEqual(macchina.getProperties().showOther, undefined)
+      assert.strictEqual(macchina.getProperties().showAnother, undefined)
+      assert.strictEqual(macchina.getProperties().textTitle, undefined)
+      assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
+      assert.strictEqual(macchina.getProperties().textComment, 'no title or subtitle on fourth')
 
-  t.is(macchina.getProperties().showSome, undefined)
-  t.is(macchina.getProperties().showOther, true)
-  t.is(macchina.getProperties().showAnother, true)
-}
+      macchina.immediateTransition('fifth')
 
-const assertRegularProperties = (t, macchina) => {
-  t.is(macchina.getProperties().textTitle, 'Start title')
-  t.is(macchina.getProperties().textSubtitle, undefined)
-  t.is(macchina.getProperties().textComment, undefined)
-
-  macchina.immediateTransition('second')
-
-  t.is(macchina.getProperties().textTitle, undefined)
-  t.is(macchina.getProperties().textSubtitle, 'Second subtitle')
-  t.is(macchina.getProperties().textComment, undefined)
-
-  macchina.immediateTransition('third')
-
-  t.is(macchina.getProperties().textTitle, 'Third title')
-  t.is(macchina.getProperties().textSubtitle, 'Third subtitle')
-  t.is(macchina.getProperties().textComment, undefined)
-
-  macchina.immediateTransition('fourth')
-
-  t.is(macchina.getProperties().textTitle, undefined)
-  t.is(macchina.getProperties().textSubtitle, undefined)
-  t.is(macchina.getProperties().textComment, 'no title or subtitle on fourth')
-
-  macchina.immediateTransition('fifth')
-
-  t.is(macchina.getProperties().textTitle, undefined)
-  t.is(macchina.getProperties().textSubtitle, undefined)
-  t.is(macchina.getProperties().textComment, undefined)
-}
-
-test('boolean properties are set correctly in regular mode', t => {
-  assertBooleanProperties(t, macchina)
-})
-
-test('regular properties are set correctly in regular mode', t => {
-  assertRegularProperties(t, macchina)
+      assert.strictEqual(macchina.getProperties().showSome, undefined)
+      assert.strictEqual(macchina.getProperties().showOther, true)
+      assert.strictEqual(macchina.getProperties().showAnother, true)
+      assert.strictEqual(macchina.getProperties().textTitle, undefined)
+      assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
+      assert.strictEqual(macchina.getProperties().textComment, undefined)      
+    })
+  })
 })
