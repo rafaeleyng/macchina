@@ -9,15 +9,11 @@ A Finite States Machine to track properties that change over time.
 npm install macchina
 ```
 
-## Demo app
-
-[macchina-knockout sample app](https://github.com/rafaeleyng/macchina-sample-app)
-
 ## Usage
 
 You can use Macchina to organize whatever code that looks like you are transitioning between a bunch of different *states* (think of a state here as *the way the things are in a particular moment*).
 
-For instance, you can organize a piece of UI, like a form that may have some different states, i.e., how it looks/works in different moments like before submiting, while is being submited and after submission. Macchina allow you to work declaratively with your UI.
+For instance, you can organize a piece of UI, like a form that may have some different states, i.e., how it looks/works in different moments like before submitting, while is being submitted and after submission. Macchina allow you to work declaratively with your UI.
 
 1. Define your UI states in a piece of paper or in your head. You have to define the possible states of your UI (and give a name for each state) and the transitions between them:
 
@@ -30,8 +26,8 @@ var states = [
   {
     name: 'start',
     properties: {
-      show: 'userForm',
-      text: { status: 'Create your user' }
+      showUserForm: true,
+      statusText: 'Create your user'
     }
   },
   {
@@ -44,14 +40,14 @@ var states = [
       ;
     },
     properties: {
-      show: 'loader'
+      showLoader: true
     }
   },
   {
     name: 'done',
     properties: {
-      show: 'userForm',
-      text: { status: 'User created!' }
+      showUserForm: true,
+      statusText: 'User created!'
     }
   }
 ];
@@ -63,10 +59,10 @@ var states = [
 var macchina = new Macchina(states);
 ```
 
-1. Bind Macchina state transitions to appopriate UI actions:
+1. Bind Macchina state transitions to appropriate UI actions:
 
   ```javascript
-saveButton.addEventListener('click', macchina.transition('save'));
+saveButton.addEventListener('click', () => macchina.transition('save'));
 ```
 
 ## States
@@ -82,7 +78,7 @@ When defining a state, you can pass the following configurations:
 }
 ```
 
-- `name`: uniquelly identifies the state inside this Macchina instance. Used in transitions to specify the target state.
+- `name`: uniquely identifies the state inside this Macchina instance. Used in transitions to specify the target state.
 
 - `callback`:
   - a function that will be executed immediately (or after `timeout` delay) when the Macchina instance is transitioned to this state. Inside this function, you can:
@@ -96,90 +92,60 @@ When defining a state, you can pass the following configurations:
 
 ### Current State
 
-You can get the current state name by calling `macchina.state()`.
+You can get the current state name by calling `macchina.getCurrentStateName()`.
 
 
 ## How to define properties values
 
-You should only set the properties values that you want defined in a particular state. All properties values not specified in that state will be undefined.
-
-Properties should be grouped in logically related groups whose name you define. For instance, properties that you use to determine whether you should show/hide UI elements could be grouped in a `show` group, while properties that determine the text values for labels could be called `text`.
-
-### The long way
-
-The basic way to set properties values is this:
+You should only set the properties values that you want defined in a particular state. All properties values not specified in that state will be `undefined`.
 
 ```javascript
 var states = [
+  {
+    name: 'saving',
+    properties: {
+      showLoader: true,
+      showMessage: true,
+      message 'Wait while saving...'
+    }
+  },
   {
     name: 'done',
     properties: {
-      show: {
-        userForm: true,
-        message: true
-      },
-      text: {
-        message: 'Success!'
-      }
+      showUserForm: true,
+      showMessage: true,
+      message 'Success!'
     }
   },
   // ...
 ];
 ```
 
-This will generate an object like bellow, whose values will be updated correctly at each state:
+This will generate a `properties` object inside the Macchina instance, like bellow, whose values will be updated correctly at each state:
 
 ```javascript
 {
+  showLoader: undefined,
   showUserForm: undefined,
   showMessage: undefined,
-  textMessage: undefined
+  message: undefined
 };
 ```
 
-### The short way
-
-However, I assume that a lot of your propertis will have `boolean` values. So there's a couple of shorthands for setting them:
-
-```javascript
-var states = [
-  {
-    name: 'start',
-    properties: {
-      animate: 'welcome', // as a string: will set `animateWelcome` to `true`
-      show: ['userForm', 'welcom'] // as an array: will set `showUserForm` and `showWelcome` to `true`
-    }
-  },
-  // ...
-];
-```
-
-When you want `false` values you actually don't have to specify, since Macchina will automatically set unspecified values to `undefined`, which is a *falsy* value.
-
-
-## How does it work
-
-Your Macchina instance (you can have several at once) will have a properties object, that will be generated from properties you pass in all states definitions. Note that **all properties names are arbitrary values** - you should name them anything that makes sense for you. See **How to define properties values** below. The states above would result in a properties object like this:
-
-```javascript
-{
-  showUserForm: undefined,
-  showLoader: undefined,
-  textStatus: undefined
-};
-```
+Note that **all properties names are arbitrary values** - you should name them anything that makes sense for you.  When you want `false` values you actually don't have to specify, since Macchina will automatically set unspecified values to `undefined`, which is a *falsy* value.
 
 When you transition to any state, the properties values specified in that state will be set, and everything else will be `undefined`. In the state named `'done'`, properties would be:
 
 ```javascript
 {
-  showUserForm: true,
   showLoader: undefined,
-  textStatus: 'User created!'
+  showUserForm: true,
+  showMessage: true,
+  message 'Success!'
 };
 ```
 
-The way to consume these properties is call `macchina.properties().showUserForm`.
+The way to consume these properties is call `macchina.properties().showLoader` etc.
 
 Note that Macchina won't show or hide the user form or change anything in your UI by itself. It will only keep track of the properties values for each state and take care of synchronous and asynchronous transitions between the states.
 
@@ -190,29 +156,66 @@ To actually change things in your UI you should write code to do that (by consum
 
 There are several ways to transition between states. A transition can happen automatically or by some action, like user clicking in a button.
 
-1. `return stateName` in the state `callback` function
+1. setting `callback` directly to a state name
 
-  This is the way to go **if all you want to do in a state is to perform some synchronous task** and then transition to another state.
+  This is useful basically for better organizing your code. All the state will do is to call the next. Is equivalent to having a function that simply returns the next state name.
 
-1. Setting `callback` directly to a state name
+  ```javascript
+  {
+    name: 'start', // mandatory state name, is the first state that Macchina will call
+    callback: 'myFirstActualState'
+  }
+  ```
 
-  This is usefull basically for better organizing your code. All the state will do is to call the next.
+1. `return 'myNextStateName'` in the state `callback` function
 
-1. `.transition(stateName)`
+  This is the way to go if all you want to do in a state is to **perform some synchronous task** and then transition to another state.
 
-  This is the way to go **to handle user input**, like going to next state when the user clicks the "Next" button. But note: you can call this method only if your current state won't perform any automatic transition (caused by the `timeout` property). See `.immediateTransition`.
+  ```javascript
+  {
+    name: 'start', // mandatory state name, is the first state that Macchina will call
+    callback: () => {
+      // do stuff
+      return 'myFirstActualState'
+    }
+  }
+  ```
 
-1. `asyncTransition(stateName)` callback
+1. receive and invoke a callback function in the state's definition `callback` function, passing the next state as a parameter
+
+  This is the way to go if all you want to do in a state is to **perform some asynchronous task ** and then transition to another state.
+
+  ```javascript
+  {
+    name: 'start', // mandatory state name, is the first state that Macchina will call
+    callback: cb => {
+      someAsyncCall()
+        .then(() => cb('myFirstActualState'))
+    }
+  }
+  ```
+
+1. `macchina.transition(stateName)`
+
+  This is the way to go **to handle user input**, like going to next state when the user clicks the "Next" button. But note: this method will only work if your current state won't perform any automatic transition (caused by the `timeout` property). See `macchina.immediateTransition`.
+
+
+  ```javascript
+  saveButton.addEventListener('click', () => macchina.transition('performingSave'));
+  ```
+
+<!-- 1. `asyncTransition(stateName)` callback
 
   This is the way to go **to handle async calls**, like a state that blocks some inputs while waits for server response. Inside a state `callback`, you can receive a `asyncTransition` and call it passing the next state name.
 
-1. `.immediateTransition(stateName)`
+  ```javascript
+  saveButton.addEventListener('click', () => macchina.transition('savingState'));
+  ``` -->
+
+1. `macchina.immediateTransition(stateName)`
 
   This is the way to go **to cancel an automatic transition** (via the `timeout` property) **and make a transition to happen immediately**. For instance,  want to show a message for 5 seconds and dismiss it. You can create a state for that with  `timeout: 5000` and `callback: 'nextStateName'`. But you can provide a button "Dismiss now", and call `immediateTransition('nextStateName')` when that button is clicked.
 
-
-## Adapters
-
-[macchina-knockout](https://github.com/rafaeleyng/macchina-knockout)
-
-I would appreciate if somebody could help by writting adapters to other libs/frameworks.
+  ```javascript
+  dismissButton.addEventListener('click', () => macchina.immediateTransition('afterWelcome'));
+  ```

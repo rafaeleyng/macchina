@@ -44,54 +44,6 @@ const regularModeStates = [
   },
 ]
 
-const concatModeStates = [
-  {
-    name: 'start',
-    properties: {
-      show: {
-        some: true,
-      },
-      text: {
-        title: 'Start title',
-      },
-    },
-  },
-  {
-    name: 'second',
-    properties: {
-      show: ['some', 'other', 'another'],
-      text: {
-        subtitle: 'Second subtitle',
-      },
-    },
-  },
-  {
-    name: 'third',
-    properties: {
-      show: ['other'],
-      text: {
-        title: 'Third title',
-        subtitle: 'Third subtitle',
-      },
-    },
-  },
-  {
-    name: 'fourth',
-    properties: {
-      show: 'some',
-      text: {
-        comment: 'no title or subtitle on fourth',
-      },
-    },
-  },
-  {
-    name: 'fifth',
-    properties: {
-      show: ['other', 'another'],
-    },
-  },
-]
-
 test.beforeEach(() => {
   macchina = new Macchina(regularModeStates)
 })
@@ -183,13 +135,3 @@ test('boolean properties are set correctly in regular mode', t => {
 test('regular properties are set correctly in regular mode', t => {
   assertRegularProperties(t, macchina)
 })
-
-// test('boolean properties are set correctly in concat mode', t => {
-//   macchina = new Macchina(concatModeStates)
-//   assertBooleanProperties(t, macchina)
-// })
-//
-// test('regular properties are set correctly in concat mode', t => {
-//   macchina = new Macchina(concatModeStates)
-//   assertRegularProperties(t, macchina)
-// })
