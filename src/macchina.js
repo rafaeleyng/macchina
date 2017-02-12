@@ -69,7 +69,7 @@ export default class Macchina {
     this.properties = {}
     this.states.forEach(state => {
       for (const i in state.properties) {
-        this.setProperty(i)
+        this.setProperty(i, undefined)
       }
     })
   }
@@ -150,7 +150,7 @@ export default class Macchina {
     }
   }
 
-  immediateTransition(stateChange) {
-    this.transition(stateChange, {immediate: true})
+  immediateTransition(stateName) {
+    this.transition(stateName, { immediate: true })
   }
 }
