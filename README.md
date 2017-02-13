@@ -148,7 +148,7 @@ When you transition to any state, the properties values specified in that state 
 }
 ```
 
-The way to consume these properties is call `macchina.getProperties().showLoader` etc.
+The way to consume these properties is call `macchina.getProperties().showLoader` etc. Be wise enough to not modify the returned object.
 
 Note that Macchina won't show or hide the user form or change anything in your UI by itself. It will only keep track of the properties values for each state and take care of synchronous and asynchronous transitions between the states. To actually change things in your UI you should write code to do that (by consuming `macchina.getProperties()` and acting appropriately) or use some data-binding framework.
 
@@ -218,3 +218,26 @@ There are 2 ways to perform transitions to respond to user input
   ```javascript
   dismissButton.addEventListener('click', () => macchina.immediateTransition('afterWelcome'))
   ```
+
+## Public API
+
+Only the constructor + 4 methods:
+
+### `new Macchina(states)`
+Creates a new instance of a states machine.
+* `states`: `[ {} ]`. array of objects containing states configuration.
+**Returns:** `{}`. `Macchina` instance.
+
+### `macchina.getCurrentStateName()`
+**Returns:** `String`. Name of current state.
+
+### `macchina.getProperties()`
+**Returns:** `{}`. Object containing merged properties from all states, but with only the values configured for the current state set.
+
+### `macchina.transition(stateName)`
+Perform a transition to the desired state. All properties will be correctly set and callback will be called, if defined. W
+* `stateName`: `String`. Name of target state.
+
+### `macchina.immediateTransition(stateName)`
+// TODO
+* `stateName`: `String`. Name of target state.

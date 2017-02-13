@@ -98,9 +98,9 @@ export default class Macchina {
   transition(stateName, transitionOptions = {}) {
     const changeStateFunction = () => {
       this.setCurrentState(this.findState(stateName))
-      const stateAfterChange = this.getCurrentState()
+      const stateAfter = this.getCurrentState()
       if (this.options.debug) {
-        console.log('currentState:', stateAfterChange.name)
+        console.log('currentState:', stateAfter.name)
       }
       this.setCurrentStateProperties()
 
@@ -113,14 +113,14 @@ export default class Macchina {
         }
       }
 
-      if (typeof stateAfterChange.callback === 'string') {
-        const nextStateName = stateAfterChange.callback
-        stateAfterChange.callback = () => nextStateName
+      if (typeof stateAfter.callback === 'string') {
+        const nextStateName = stateAfter.callback
+        stateAfter.callback = () => nextStateName
       }
 
-      if (stateAfterChange.callback) {
+      if (stateAfter.callback) {
         // sync transition
-        const nextStateSync = stateAfterChange.callback(asyncTransition)
+        const nextStateSync = stateAfter.callback(asyncTransition)
         if (nextStateSync && !didTransition) {
           didTransition = true
           this.transition(nextStateSync)
@@ -128,10 +128,10 @@ export default class Macchina {
       }
     }
 
-    const stateBeforeChange = this.getCurrentState()
-    const isInitialState = stateBeforeChange === undefined
+    const stateBefore = this.getCurrentState()
+    const isInitialState = stateBefore === undefined
     if (!isInitialState) {
-      clearTimeout(stateBeforeChange.__timeoutID)
+      clearTimeout(stateBefore.__timeoutID)
     }
 
     let timeout
@@ -140,13 +140,14 @@ export default class Macchina {
     } else if (isInitialState) {
       timeout = 0
     } else {
-      timeout = stateBeforeChange.timeout ? stateBeforeChange.timeout : 0
+      timeout = stateBefore.timeout ? stateBefore.timeout : 0
     }
 
+    // console.log('timeout', timeout, stateBefore)
     if (timeout === 0) {
       changeStateFunction()
     } else {
-      stateBeforeChange.__timeoutID = setTimeout(changeStateFunction, timeout)
+      stateBefore.__timeoutID = setTimeout(changeStateFunction, timeout)
     }
   }
 
