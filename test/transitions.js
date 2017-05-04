@@ -11,12 +11,18 @@ let callback3
 
 describe('transitions', () => {
   beforeEach(() => {
-    const data = statesData();
-    ({ callback0, callback1, callback2, callback3 } = data)
+    const data = statesData()
+    callback0 = data.callback0
+    callback1 = data.callback1
+    callback2 = data.callback2
+    callback3 = data.callback3
     macchina = new Macchina(data.states)
   })
 
   it('transition changes state correctly', () => {
+    // assert
+    assert.equal(macchina.state(), 'start')
+
     // act
     macchina.transition('second')
 

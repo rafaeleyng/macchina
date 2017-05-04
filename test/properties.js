@@ -1,12 +1,13 @@
 import assert from 'assert'
-import statesData from './data/states0'
+import statesData0 from './data/states0'
+import statesData1 from './data/states1'
 import Macchina from '../src/macchina'
 
 let macchina
 
 describe('properties', () => {
   beforeEach(() => {
-    const data = statesData();
+    const data = statesData0()
     macchina = new Macchina(data.states)
   })
 
@@ -62,5 +63,33 @@ describe('properties', () => {
     assert.strictEqual(macchina.properties().textTitle, undefined)
     assert.strictEqual(macchina.properties().textSubtitle, undefined)
     assert.strictEqual(macchina.properties().textComment, 'no title or subtitle on fourth')
+  })
+
+  it('should cleanup properties between transitions', () => {
+    const data = statesData1()
+    macchina = new Macchina(data.states)
+
+    // assert
+    assert.strictEqual(macchina.properties().prop0, 'this')
+    assert.strictEqual(macchina.properties().prop1, 'state')
+    assert.strictEqual(macchina.properties().prop2, 'sure')
+    assert.strictEqual(macchina.properties().prop3, 'has')
+    assert.strictEqual(macchina.properties().prop4, 'a')
+    assert.strictEqual(macchina.properties().prop5, 'lot')
+    assert.strictEqual(macchina.properties().prop6, 'of')
+    assert.strictEqual(macchina.properties().prop7, 'properties')
+
+    // act
+    macchina.transition('first')
+
+    // assert
+    assert.strictEqual(macchina.properties().prop0, undefined)
+    assert.strictEqual(macchina.properties().prop1, undefined)
+    assert.strictEqual(macchina.properties().prop2, undefined)
+    assert.strictEqual(macchina.properties().prop3, undefined)
+    assert.strictEqual(macchina.properties().prop4, undefined)
+    assert.strictEqual(macchina.properties().prop5, undefined)
+    assert.strictEqual(macchina.properties().prop6, undefined)
+    assert.strictEqual(macchina.properties().prop7, undefined)
   })
 })
