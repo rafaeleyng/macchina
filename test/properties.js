@@ -12,55 +12,55 @@ describe('properties', () => {
 
   it('should set properties correctly', () => {
     // assert
-    assert.strictEqual(macchina.getProperties().showSome, true)
-    assert.strictEqual(macchina.getProperties().showOther, undefined)
-    assert.strictEqual(macchina.getProperties().showAnother, undefined)
-    assert.strictEqual(macchina.getProperties().textTitle, 'Start title')
-    assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
-    assert.strictEqual(macchina.getProperties().textComment, undefined)
+    assert.strictEqual(macchina.properties().showSome, true)
+    assert.strictEqual(macchina.properties().showOther, undefined)
+    assert.strictEqual(macchina.properties().showAnother, undefined)
+    assert.strictEqual(macchina.properties().textTitle, 'Start title')
+    assert.strictEqual(macchina.properties().textSubtitle, undefined)
+    assert.strictEqual(macchina.properties().textComment, undefined)
 
     // act
     macchina.transition('first')
 
     // assert
-    assert.strictEqual(macchina.getProperties().showSome, undefined)
-    assert.strictEqual(macchina.getProperties().showOther, true)
-    assert.strictEqual(macchina.getProperties().showAnother, true)
-    assert.strictEqual(macchina.getProperties().textTitle, undefined)
-    assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
-    assert.strictEqual(macchina.getProperties().textComment, undefined)
+    assert.strictEqual(macchina.properties().showSome, undefined)
+    assert.strictEqual(macchina.properties().showOther, true)
+    assert.strictEqual(macchina.properties().showAnother, true)
+    assert.strictEqual(macchina.properties().textTitle, undefined)
+    assert.strictEqual(macchina.properties().textSubtitle, undefined)
+    assert.strictEqual(macchina.properties().textComment, undefined)
 
     // act
     macchina.transition('second')
 
     // assert
-    assert.strictEqual(macchina.getProperties().showSome, true)
-    assert.strictEqual(macchina.getProperties().showOther, true)
-    assert.strictEqual(macchina.getProperties().showAnother, true)
-    assert.strictEqual(macchina.getProperties().textTitle, undefined)
-    assert.strictEqual(macchina.getProperties().textSubtitle, 'Second subtitle')
-    assert.strictEqual(macchina.getProperties().textComment, undefined)
+    assert.strictEqual(macchina.properties().showSome, true)
+    assert.strictEqual(macchina.properties().showOther, true)
+    assert.strictEqual(macchina.properties().showAnother, true)
+    assert.strictEqual(macchina.properties().textTitle, undefined)
+    assert.strictEqual(macchina.properties().textSubtitle, 'Second subtitle')
+    assert.strictEqual(macchina.properties().textComment, undefined)
 
     // act
     macchina.transition('third')
 
     // assert
-    assert.strictEqual(macchina.getProperties().showSome, undefined)
-    assert.strictEqual(macchina.getProperties().showOther, true)
-    assert.strictEqual(macchina.getProperties().showAnother, undefined)
-    assert.strictEqual(macchina.getProperties().textTitle, 'Third title')
-    assert.strictEqual(macchina.getProperties().textSubtitle, 'Third subtitle')
-    assert.strictEqual(macchina.getProperties().textComment, undefined)
+    assert.strictEqual(macchina.properties().showSome, undefined)
+    assert.strictEqual(macchina.properties().showOther, true)
+    assert.strictEqual(macchina.properties().showAnother, undefined)
+    assert.strictEqual(macchina.properties().textTitle, 'Third title')
+    assert.strictEqual(macchina.properties().textSubtitle, 'Third subtitle')
+    assert.strictEqual(macchina.properties().textComment, undefined)
 
     // act
     macchina.transition('fourth')
 
     // assert
-    assert.strictEqual(macchina.getProperties().showSome, true)
-    assert.strictEqual(macchina.getProperties().showOther, undefined)
-    assert.strictEqual(macchina.getProperties().showAnother, undefined)
-    assert.strictEqual(macchina.getProperties().textTitle, undefined)
-    assert.strictEqual(macchina.getProperties().textSubtitle, undefined)
-    assert.strictEqual(macchina.getProperties().textComment, 'no title or subtitle on fourth')
+    assert.strictEqual(macchina.properties().showSome, true)
+    assert.strictEqual(macchina.properties().showOther, undefined)
+    assert.strictEqual(macchina.properties().showAnother, undefined)
+    assert.strictEqual(macchina.properties().textTitle, undefined)
+    assert.strictEqual(macchina.properties().textSubtitle, undefined)
+    assert.strictEqual(macchina.properties().textComment, 'no title or subtitle on fourth')
   })
 })

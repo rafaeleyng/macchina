@@ -21,7 +21,7 @@ describe('transitions', () => {
     macchina.transition('second')
 
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'second')
+    assert.equal(macchina.state(), 'second')
   })
 
   it('transition throws if state doesn\'t exist', () => {
@@ -34,7 +34,7 @@ describe('transitions', () => {
     macchina.immediateTransition('second')
 
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'second')
+    assert.equal(macchina.state(), 'second')
   })
 
   it('immediateTransition throws if state doesn\'t exist', () => {

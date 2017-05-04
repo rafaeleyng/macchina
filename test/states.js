@@ -17,12 +17,12 @@ describe('states', () => {
 
   it('initial state is "start"', () => {
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'start')
+    assert.equal(macchina.state(), 'start')
   })
 
   it('callback is called only when transition occurs', () => {
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'start')
+    assert.equal(macchina.state(), 'start')
     assert.equal(callback0.callCount, 1)
     assert.equal(callback1.callCount, 0)
     assert.equal(callback2.callCount, 0)
@@ -31,7 +31,7 @@ describe('states', () => {
     macchina.transition('first')
 
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'first')
+    assert.equal(macchina.state(), 'first')
     assert.equal(callback0.callCount, 1)
     assert.equal(callback1.callCount, 1)
     assert.equal(callback2.callCount, 0)
@@ -40,7 +40,7 @@ describe('states', () => {
     macchina.transition('second')
 
     // assert
-    assert.equal(macchina.getCurrentStateName(), 'second')
+    assert.equal(macchina.state(), 'second')
     assert.equal(callback0.callCount, 1)
     assert.equal(callback1.callCount, 1)
     assert.equal(callback2.callCount, 1)

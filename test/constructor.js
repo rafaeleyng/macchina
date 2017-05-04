@@ -13,8 +13,8 @@ describe('constructor', () => {
     macchina3.transition('different')
 
     // assert
-    assert.equal('start', macchina1.getCurrentStateName())
-    assert.equal('other', macchina2.getCurrentStateName())
-    assert.equal('different', macchina3.getCurrentStateName())
+    assert.equal('start', macchina1.state())
+    assert.equal('other', macchina2.state())
+    assert.equal('different', macchina3.state())
   })
 })

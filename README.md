@@ -95,7 +95,7 @@ When defining a state, you can pass the following configurations:
 
 - `properties`: properties that will be set in the macchina when this is the current state. See section on properties.
 
-You can get the current state name by calling `macchina.getCurrentStateName()`.
+You can get the current state name by calling `macchina.state()`.
 
 
 ## properties
@@ -148,9 +148,9 @@ When you transition to any state, the properties values specified in that state 
 }
 ```
 
-The way to consume these properties is call `macchina.getProperties().showLoader` etc. Be wise enough to not modify the returned object.
+The way to consume these properties is call `macchina.properties().showLoader` etc. Be wise enough to not modify the returned object.
 
-Note that Macchina won't show or hide the user form or change anything in your UI by itself. It will only keep track of the properties values for each state and take care of synchronous and asynchronous transitions between the states. To actually change things in your UI you should write code to do that (by consuming `macchina.getProperties()` and acting appropriately) or use some data-binding framework.
+Note that Macchina won't show or hide the user form or change anything in your UI by itself. It will only keep track of the properties values for each state and take care of synchronous and asynchronous transitions between the states. To actually change things in your UI you should write code to do that (by consuming `macchina.properties()` and acting appropriately) or use some data-binding framework.
 
 
 ## transitions
@@ -228,10 +228,10 @@ Creates a new instance of a states machine.
 * `states`: `[ {} ]`. array of objects containing states configuration.
 **Returns:** `{}`. `Macchina` instance.
 
-### `macchina.getCurrentStateName()`
+### `macchina.state()`
 **Returns:** `String`. Name of current state.
 
-### `macchina.getProperties()`
+### `macchina.properties()`
 **Returns:** `{}`. Object containing merged properties from all states, but with only the values configured for the current state set.
 
 ### `macchina.transition(stateName)`
