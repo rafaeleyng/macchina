@@ -4,7 +4,6 @@ export default class Macchina {
     this._options = options
     this._states = states
     this._currentState = undefined
-    this._initProperties()
 
     // start the macchina
     this.transition('start')
@@ -37,6 +36,15 @@ export default class Macchina {
   }
 
   _initProperties() {
+    if (this._properties) {
+      // not first time
+      for (const i in this._properties) {
+        this._setProperty(i, undefined)
+      }
+      return
+    }
+
+    // first time
     this._properties = {}
     this._states.forEach(state => {
       for (const i in state.properties) {
